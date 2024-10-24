@@ -1,0 +1,18 @@
+.card {
+  margin-bottom: 0.2rem;
+
+  &:hover {
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.1);
+    transition: 0.3s;
+  }
+
+  &-body {
+    display: flex;
+    flex-direction: column;
+
+    .btn {
+      align-self: start;
+      margin-top: auto;
+    }
+  }
+}
