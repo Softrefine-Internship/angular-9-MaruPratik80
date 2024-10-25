@@ -15,18 +15,11 @@
                 class="form-control"
                 placeholder="Enter first name"
               />
-              <div
-                *ngIf="submitted && signupForm.controls['firstName'].errors"
-                class="mt-2"
-              >
-                <small
-                  *ngIf="signupForm.controls['firstName'].errors['required']"
-                  class="text-danger"
+              <div *ngIf="submitted && signupForm.controls['firstName'].errors" class="mt-2">
+                <small *ngIf="signupForm.controls['firstName'].errors['required']" class="text-danger"
                   >First name is required</small
                 >
-                <small
-                  *ngIf="signupForm.controls['firstName'].errors['pattern']"
-                  class="text-danger"
+                <small *ngIf="signupForm.controls['firstName'].errors['pattern']" class="text-danger"
                   >Only alphanumeric characters are allowed</small
                 >
               </div>
@@ -41,18 +34,11 @@
                 class="form-control"
                 placeholder="Enter last name"
               />
-              <div
-                *ngIf="submitted && signupForm.controls['lastName'].errors"
-                class="mt-2"
-              >
-                <small
-                  *ngIf="signupForm.controls['lastName'].errors['required']"
-                  class="text-danger"
+              <div *ngIf="submitted && signupForm.controls['lastName'].errors" class="mt-2">
+                <small *ngIf="signupForm.controls['lastName'].errors['required']" class="text-danger"
                   >Last name is required</small
                 >
-                <small
-                  *ngIf="signupForm.controls['lastName'].errors['pattern']"
-                  class="text-danger"
+                <small *ngIf="signupForm.controls['lastName'].errors['pattern']" class="text-danger"
                   >Only alphanumeric characters are allowed</small
                 >
               </div>
@@ -67,75 +53,70 @@
                 class="form-control"
                 placeholder="Enter email"
               />
-              <div
-                *ngIf="submitted && signupForm.controls['email'].errors"
-                class="mt-2"
-              >
-                <small
-                  *ngIf="signupForm.controls['email'].errors['required']"
-                  class="text-danger"
+              <div *ngIf="submitted && signupForm.controls['email'].errors" class="mt-2">
+                <small *ngIf="signupForm.controls['email'].errors['required']" class="text-danger"
                   >Email is required</small
                 >
-                <small
-                  *ngIf="signupForm.controls['email'].errors['email']"
-                  class="text-danger"
+                <small *ngIf="signupForm.controls['email'].errors['email']" class="text-danger"
                   >Invalid email</small
                 >
-                <small
-                  *ngIf="signupForm.controls['email'].errors['emailTaken']"
-                  class="text-danger"
+                <small *ngIf="signupForm.controls['email'].errors['emailTaken']" class="text-danger"
                   >Email is already taken</small
                 >
               </div>
             </div>
 
-            <div class="form-group mt-3">
+            <div class="form-group mt-3 position-relative">
               <label for="password">Password</label>
               <input
-                type="password"
+                [type]="showPassword ? 'text' : 'password'"
                 id="password"
                 formControlName="password"
                 class="form-control"
                 placeholder="Password"
               />
-              <div
-                *ngIf="submitted && signupForm.controls['password'].errors"
-                class="mt-2"
-              >
-                <small
-                  *ngIf="signupForm.controls['password'].errors['required']"
-                  class="text-danger"
+              <i
+                class="bi"
+                [ngClass]="showPassword ? 'bi-eye' : 'bi-eye-slash'"
+                (click)="togglePassword()"
+                style="position: absolute; right: 10px; top: 35px; cursor: pointer"
+              ></i>
+              <div *ngIf="submitted && signupForm.controls['password'].errors" class="mt-2">
+                <small *ngIf="signupForm.controls['password'].errors['required']" class="text-danger"
                   >Password is required</small
                 >
-                <small
-                  *ngIf="signupForm.controls['password'].errors['minlength']"
-                  class="text-danger"
+                <small *ngIf="signupForm.controls['password'].errors['minlength']" class="text-danger"
                   >Password must be at least 8 characters long</small
                 >
               </div>
             </div>
 
-            <div class="form-group mt-3">
+            <div class="form-group mt-3 position-relative">
               <label for="confirmPassword">Confirm Password</label>
               <input
-                type="password"
+                [type]="showConfirmPassword ? 'text' : 'password'"
                 id="confirmPassword"
                 formControlName="confirmPassword"
                 class="form-control"
+                placeholder="Confirm Password"
               />
-              <div
-                *ngIf="submitted && signupForm.errors?.['mustMatch']"
-                class="mt-2"
-              >
-                <small class="text-danger">Passwords must match</small>
+              <i
+                class="bi"
+                [ngClass]="showConfirmPassword ? 'bi-eye' : 'bi-eye-slash'"
+                (click)="toggleConfirmPassword()"
+                style="position: absolute; right: 10px; top: 35px; cursor: pointer"
+              ></i>
+              <div *ngIf="submitted && signupForm.controls['confirmPassword'].errors" class="mt-2">
+                <small *ngIf="signupForm.controls['confirmPassword'].errors['required']" class="text-danger"
+                  >Confirm password is required</small
+                >
+                <small *ngIf="signupForm.hasError('mustMatch')" class="text-danger"
+                  >Passwords must match</small
+                >
               </div>
             </div>
 
-            <button
-              type="submit"
-              [disabled]="signupForm.invalid"
-              class="btn btn-primary btn-block mt-4"
-            >
+            <button type="submit" [disabled]="signupForm.invalid" class="btn btn-primary btn-block mt-4">
               Sign Up
             </button>
           </form>

@@ -18,20 +18,13 @@ export interface AuthResponseData {
   registered?: boolean;
 }
 
-const handleAuthentication = (
-  expiresIn: number,
-  email: string,
-  userId: string,
-  token: string
-) => {
-  const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
+const handleAuthentication = (email: string, password: string) => {
   // const user = new User(email, userId, token, expirationDate);
   // localStorage.setItem('userData', JSON.stringify(user));
+  localStorage.setItem('userData', JSON.stringify({ email, password }));
   return new AuthActions.AuthenticateSuccess({
     email: email,
-    userId: userId,
-    token: token,
-    expirationDate: expirationDate,
+    password: password,
     redirect: true,
   });
 };
@@ -87,45 +80,42 @@ export class AuthEffects {
     );
   }); */
 
-  /* authLogin = createEffect(
+  authLogin = createEffect(
     () => {
       return this.actions$.pipe(
         ofType(AuthActions.LOGIN_START),
-        switchMap((authData: AuthActions.LoginStart) => {
-          return this.http
-            .post<AuthResponseData>(
-              'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=' +
-                environment.firebaseAPIKey,
-              {
-                email: authData.payload.email,
-                password: authData.payload.password,
-                returnSecureToken: true,
-              }
-            )
-            .pipe(
-              
-              map(resData =>
-                handleAuthentication(
-                  +resData.expiresIn,
-                  resData.email,
-                  resData.localId,
-                  resData.idToken
-                )
-              ),
-              catchError(errorRes => handleError(errorRes))
-            );
+        map((authData: AuthActions.LoginStart) => {
+          // localStorage.setItem('userData', JSON.stringify(authData.payload));
+          // this.router.navigate(['/blogs']);
+          return handleAuthentication(authData.payload.email, authData.payload.password);
         })
+        // switchMap((authData: AuthActions.LoginStart) => {
+        // return this.http
+        //   .post<AuthResponseData>(
+        //     'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=',
+        //     //  + environment.firebaseAPIKey
+        //     {
+        //       email: authData.payload.email,
+        //       password: authData.payload.password,
+        //       returnSecureToken: true,
+        //     }
+        //   )
+        //   .pipe(
+        //     map(resData => handleAuthentication(resData.email)),
+        //     catchError(errorRes => handleError(errorRes))
+        //   );
+        // })
       );
     }
     // { dispatch: false }
-  ); */
+  );
 
   authRedirect = createEffect(
     () => {
       return this.actions$.pipe(
         ofType(AuthActions.AUTHENTICATE_SUCCESS),
         tap((authSuccsessAction: AuthActions.AuthenticateSuccess) => {
-          if (authSuccsessAction.payload.redirect) this.router.navigate(['/']);
+          if (authSuccsessAction.payload.redirect) this.router.navigate(['/blogs']);
         })
       );
     },
@@ -139,23 +129,18 @@ export class AuthEffects {
         const userDataString = localStorage.getItem('userData');
         const userData: {
           email: string;
-          id: string;
-          _token: string;
-          _tokenExpirationDate: string;
+          password: string;
         } = userDataString ? JSON.parse(userDataString) : null;
+        console.log(userData);
         if (!userData) {
           return { type: 'DUMMY' };
         }
 
-        if (userData._token) {
-          const expirationDuration =
-            new Date(userData._tokenExpirationDate).getTime() -
-            new Date().getTime();
+        if (userData) {
+          // const expirationDuration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
           return new AuthActions.AuthenticateSuccess({
             email: userData.email,
-            userId: userData.id,
-            token: userData._token,
-            expirationDate: new Date(userData._tokenExpirationDate),
+            password: userData.password,
             redirect: false,
           });
         }
@@ -170,16 +155,12 @@ export class AuthEffects {
         ofType(AuthActions.LOGOUT),
         tap(() => {
           localStorage.removeItem('userData');
-          this.router.navigate(['/auth']);
+          this.router.navigate(['/login']);
         })
       );
     },
     { dispatch: false }
   );
 
-  constructor(
-    private actions$: Actions,
-    private http: HttpClient,
-    private router: Router
-  ) {}
+  constructor(private actions$: Actions, private http: HttpClient, private router: Router) {}
 }

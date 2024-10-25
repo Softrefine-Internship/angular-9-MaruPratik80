@@ -12,23 +12,15 @@ const initialState: State = {
   loading: false,
 };
 
-export function authReducer(
-  state: State = initialState,
-  action: AuthActions.AuthActions
-) {
+export function authReducer(state: State = initialState, action: AuthActions.AuthActions) {
   switch (action.type) {
     case AuthActions.AUTHENTICATE_SUCCESS:
       const act = action as AuthActions.AuthenticateSuccess;
-      /*      const user = new User(
-        act.payload.email,
-        act.payload.userId,
-        act.payload.token,
-        act.payload.expirationDate
-      ); */
+      const user = { email: act.payload.email, password: act.payload.password };
       return {
         ...state,
         authError: null,
-        // user,
+        user,
         loading: false,
       };
     case AuthActions.LOGOUT:
@@ -40,6 +32,7 @@ export function authReducer(
     case AuthActions.SIGNUP_START:
       return {
         ...state,
+        user: (action as AuthActions.LoginStart).payload,
         authError: null,
         loading: true,
       };

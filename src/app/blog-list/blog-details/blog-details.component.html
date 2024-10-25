@@ -1,36 +1,26 @@
 <div class="container mt-5" *ngIf="blog">
   <div class="row">
     <div class="col-12 text-center mb-4">
-      <img
-        [src]="blog.photo_url"
-        class="img-fluid rounded"
-        alt="Blog Post Image"
-        style="max-width: 100%; height: auto"
-      />
+      <img [src]="blog.photo_url" class="img-fluid rounded blog-image" alt="Blog Post Image" />
     </div>
 
     <div class="col-12">
-      <h1 class="display-4">{{ blog.title }}</h1>
-      <p class="text-muted">
+      <h1 class="blog-title">{{ blog.title }}</h1>
+      <p class="text-muted blog-category">
         Category: <strong>{{ blog.category }}</strong>
       </p>
-      <p class="lead">{{ blog.description }}</p>
+      <p class="lead blog-description">{{ blog.description }}</p>
     </div>
 
-    <div class="col-12">
+    <div class="col-12 blog-meta">
       <ul class="list-inline text-muted">
-        <li class="list-inline-item">
-          Posted on: {{ blog.created_at | date : "longDate" }}
-        </li>
-        <li class="list-inline-item">
-          Last updated: {{ blog.updated_at | date : "longDate" }}
-        </li>
+        <li class="list-inline-item">Posted on: {{ blog.created_at | date : 'longDate' }}</li>
+        <li class="list-inline-item">Last updated: {{ blog.updated_at | date : 'longDate' }}</li>
         <li class="list-inline-item">Author ID: {{ blog.user_id }}</li>
       </ul>
     </div>
 
     <div class="col-12 mt-4">
-      <h3>Full Content</h3>
       <div [innerHTML]="blog.content_html" class="content-html"></div>
     </div>
 

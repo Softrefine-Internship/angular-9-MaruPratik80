@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
-import { Router } from '@angular/router';
+import { Store } from '@ngrx/store';
+import { map } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import * as fromApp from './store/app.reducer';
+import * as AuthActions from './auth/store/auth.actions';
 
 @Component({
   selector: 'app-root',
@@ -9,15 +13,26 @@ import { Router } from '@angular/router';
 export class AppComponent implements OnInit {
   title = 'angular-9';
   isAuthenticated!: boolean;
+  private userSub!: Subscription;
 
-  constructor(private router: Router) {}
+  constructor(private store: Store<fromApp.AppState>) {}
 
   ngOnInit() {
-    this.isAuthenticated = !!localStorage.getItem('isLoggedIn');
+    this.store.dispatch(new AuthActions.AutoLogin());
+
+    this.userSub = this.store
+      .select('auth')
+      .pipe(map(authState => authState.user))
+      .subscribe(user => {
+        this.isAuthenticated = !!user;
+      });
   }
 
   logout() {
-    localStorage.removeItem('isLoggedIn');
-    this.router.navigate(['/login']);
+    this.store.dispatch(new AuthActions.Logout());
+  }
+
+  ngOnDestroy() {
+    this.userSub.unsubscribe();
   }
 }

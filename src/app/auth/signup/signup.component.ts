@@ -10,22 +10,24 @@ export class SignupComponent implements OnInit {
   signupForm!: FormGroup;
   submitted = false;
 
+  showPassword: boolean = false;
+  showConfirmPassword: boolean = false;
+
+  togglePassword() {
+    this.showPassword = !this.showPassword;
+  }
+
+  toggleConfirmPassword() {
+    this.showConfirmPassword = !this.showConfirmPassword;
+  }
+
   ngOnInit(): void {
     this.signupForm = new FormGroup(
       {
-        firstName: new FormControl('', [
-          Validators.required,
-          Validators.pattern('^[a-zA-Z0-9]+$'),
-        ]),
-        lastName: new FormControl('', [
-          Validators.required,
-          Validators.pattern('^[a-zA-Z0-9]+$'),
-        ]),
+        firstName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z0-9]+$')]),
+        lastName: new FormControl('', [Validators.required, Validators.pattern('^[a-zA-Z0-9]+$')]),
         email: new FormControl('', [Validators.required, Validators.email]),
-        password: new FormControl('', [
-          Validators.required,
-          Validators.minLength(8),
-        ]),
+        password: new FormControl('', [Validators.required, Validators.minLength(8)]),
         confirmPassword: new FormControl('', Validators.required),
       },
       {

@@ -1,9 +1,10 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Routes } from '@angular/router';
-import { AuthGuard } from '../auth.guard';
+import { AuthGuard } from '../auth/auth.guard';
 import { BlogDetailsComponent } from './blog-details/blog-details.component';
 import { BlogListComponent } from './blog-list.component';
+import { BlogResolverService } from './blog-resolver.service';
 
 const routes: Routes = [
   {
@@ -16,11 +17,13 @@ const routes: Routes = [
     //     component: BlogDetailsComponent,
     //   },
     // ],
+    resolve: [BlogResolverService],
   },
   {
     path: ':id',
     canActivate: [AuthGuard],
     component: BlogDetailsComponent,
+    resolve: [BlogResolverService],
   },
 ];
 

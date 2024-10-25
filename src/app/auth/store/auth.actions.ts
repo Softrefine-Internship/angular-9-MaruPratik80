@@ -13,10 +13,11 @@ export class AuthenticateSuccess implements Action {
 
   constructor(
     public payload: {
+      firstName?: string;
+      lastName?: string;
       email: string;
-      userId: string;
-      token: string;
-      expirationDate: Date;
+      password: string;
+      confirmPassword?: string;
       redirect: boolean;
     }
   ) {}

@@ -1,40 +1,36 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Store } from '@ngrx/store';
+import { map } from 'rxjs/operators';
+import { Subscription } from 'rxjs';
+import { Blog } from './blog.modal';
+import * as fromApp from '../store/app.reducer';
+import * as BlogActions from './store/blog.actions';
 
 @Component({
   selector: 'app-blog-list',
   templateUrl: './blog-list.component.html',
   styleUrls: ['./blog-list.component.scss'],
 })
-export class BlogListComponent implements OnInit {
-  blogs!: any[];
-  page = 1;
-  limit = 10;
+export class BlogListComponent implements OnInit, OnDestroy {
+  blogs: Blog[] = [];
+  subscription!: Subscription;
 
-  constructor(private http: HttpClient) {}
+  constructor(private store: Store<fromApp.AppState>) {}
 
-  ngOnInit(): void {
-    this.loadBlogs();
-  }
-
-  loadBlogs(): void {
-    this.http
-      .get(
-        'https://api.slingacademy.com/v1/sample-data/blog-posts?offset=5&limit=30'
-      )
-      .subscribe((response: any) => {
-        console.log(response);
-        this.blogs = response.blogs;
+  ngOnInit() {
+    this.subscription = this.store
+      .select('blog')
+      .pipe(map(blogsState => blogsState.blogs))
+      .subscribe((blogs: Blog[]) => {
+        this.blogs = blogs;
       });
-    // this.blogService.getBlogs().subscribe((data) => {
-    //   // Simulating pagination by slicing the data array
-    //   const newBlogs = data.slice((this.page - 1) * this.limit, this.page * this.limit);
-    //   this.blogs = [...this.blogs, ...newBlogs];
-    // });
   }
 
-  onScroll(): void {
-    this.page++;
-    this.loadBlogs();
+  onScroll() {
+    this.store.dispatch(new BlogActions.FetchBlogs(this.blogs.length));
+  }
+
+  ngOnDestroy() {
+    this.subscription.unsubscribe();
   }
 }
