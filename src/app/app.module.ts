@@ -18,6 +18,7 @@ import { environment } from 'src/environments/environment';
 import * as fromApp from './store/app.reducer';
 import { AuthEffects } from './auth/store/auth.effects';
 import { BlogEffects } from './blog-list/store/blog.effects';
+import { ScrollNearEndDirective } from './scroll-near-end.directive';
 
 @NgModule({
   declarations: [
@@ -27,6 +28,7 @@ import { BlogEffects } from './blog-list/store/blog.effects';
     BlogListComponent,
     BlogDetailsComponent,
     LoadingSpinnerComponent,
+    ScrollNearEndDirective,
   ],
   imports: [
     BrowserModule,

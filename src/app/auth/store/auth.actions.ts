@@ -1,27 +1,15 @@
 import { Action } from '@ngrx/store';
 
 export const LOGIN_START = '[Auth] Login Start';
-export const AUTHENTICATE_SUCCESS = '[Auth] Authenticate Success';
+export const LOGIN_SUCCESS = '[Auth] Login Success';
+export const LOGIN_FAIL = '[Auth] Login Fail';
 export const AUTHENTICATE_FAIL = '[Auth] Authenticate Fail';
 export const SIGNUP_START = '[Auth] Signup Start';
+export const SIGNUP_SUCCESS = '[Auth] Signup Success';
+export const SIGNUP_FAIL = '[Auth] Signup Fail';
 export const CLEAR_ERROR = '[Auth] Clear Error';
 export const AUTO_LOGIN = '[Auth] Auto Login';
 export const LOGOUT = '[Auth] Logout';
-
-export class AuthenticateSuccess implements Action {
-  readonly type: string = AUTHENTICATE_SUCCESS;
-
-  constructor(
-    public payload: {
-      firstName?: string;
-      lastName?: string;
-      email: string;
-      password: string;
-      confirmPassword?: string;
-      redirect: boolean;
-    }
-  ) {}
-}
 
 export class Logout implements Action {
   readonly type: string = LOGOUT;
@@ -33,6 +21,18 @@ export class LoginStart implements Action {
   constructor(public payload: { email: string; password: string }) {}
 }
 
+export class LoginSuccess implements Action {
+  readonly type: string = LOGIN_SUCCESS;
+
+  constructor(
+    public payload: {
+      email: string;
+      password: string;
+      redirect: boolean;
+    }
+  ) {}
+}
+
 export class AuthenticateFail implements Action {
   readonly type: string = AUTHENTICATE_FAIL;
 
@@ -42,7 +42,7 @@ export class AuthenticateFail implements Action {
 export class SignupStart implements Action {
   readonly type: string = SIGNUP_START;
 
-  constructor(public payload: { email: string; password: string }) {}
+  constructor(public payload: { firstName: string; lastName: string; email: string; password: string }) {}
 }
 
 export class ClearError implements Action {
@@ -54,9 +54,9 @@ export class AutoLogin implements Action {
 }
 
 export type AuthActions =
-  | AuthenticateSuccess
   | Logout
   | LoginStart
+  | LoginSuccess
   | AuthenticateFail
   | SignupStart
   | ClearError

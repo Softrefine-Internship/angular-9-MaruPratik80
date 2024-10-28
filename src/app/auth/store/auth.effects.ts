@@ -1,33 +1,12 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, find, map, switchMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 import * as AuthActions from './auth.actions';
-// import { User } from '../user.model';
-
-export interface AuthResponseData {
-  kind: string;
-  idToken: string;
-  email: string;
-  refreshToken: string;
-  expiresIn: string;
-  localId: string;
-  registered?: boolean;
-}
-
-const handleAuthentication = (email: string, password: string) => {
-  // const user = new User(email, userId, token, expirationDate);
-  // localStorage.setItem('userData', JSON.stringify(user));
-  localStorage.setItem('userData', JSON.stringify({ email, password }));
-  return new AuthActions.AuthenticateSuccess({
-    email: email,
-    password: password,
-    redirect: true,
-  });
-};
+import { User } from '../user.model';
 
 const handleError = (errorRes: any) => {
   let errorMessage = 'An unknown error occurred!';
@@ -50,72 +29,67 @@ const handleError = (errorRes: any) => {
 
 @Injectable()
 export class AuthEffects {
-  /* authSignup = createEffect(() => {
-    return this.actions$.pipe(
-      ofType(AuthActions.SIGNUP_START),
-      switchMap((signupAction: AuthActions.SignupStart) => {
-        return this.http
-          .post<AuthResponseData>(
-            'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=' +
-              environment.firebaseAPIKey,
-            {
-              email: signupAction.payload.email,
-              password: signupAction.payload.password,
-              returnSecureToken: true,
-            }
-          )
-          .pipe(
-            
-            map(resData =>
-              handleAuthentication(
-                +resData.expiresIn,
-                resData.email,
-                resData.localId,
-                resData.idToken
-              )
-            ),
-            catchError(errorRes => handleError(errorRes))
-          );
-      })
-    );
-  }); */
-
-  authLogin = createEffect(
+  authSignup = createEffect(
     () => {
       return this.actions$.pipe(
-        ofType(AuthActions.LOGIN_START),
-        map((authData: AuthActions.LoginStart) => {
-          // localStorage.setItem('userData', JSON.stringify(authData.payload));
-          // this.router.navigate(['/blogs']);
-          return handleAuthentication(authData.payload.email, authData.payload.password);
+        ofType(AuthActions.SIGNUP_START),
+        switchMap((signupAction: AuthActions.SignupStart) => {
+          return this.http.get<User[]>('http://localhost:3000/users');
+          return this.http
+            .post<User>('http://localhost:3000/users', {
+              firstName: signupAction.payload.firstName,
+              lastName: signupAction.payload.lastName,
+              email: signupAction.payload.email,
+              password: signupAction.payload.password,
+            })
+            .pipe(
+              tap(resData => {
+                console.log(resData);
+                // return handleAuthentication(signupAction.payload.email, signupAction.payload.password);
+              })
+              // catchError(errorRes => handleError(errorRes))
+            );
         })
-        // switchMap((authData: AuthActions.LoginStart) => {
-        // return this.http
-        //   .post<AuthResponseData>(
-        //     'https://www.googleapis.com/identitytoolkit/v3/relyingparty/verifyPassword?key=',
-        //     //  + environment.firebaseAPIKey
-        //     {
-        //       email: authData.payload.email,
-        //       password: authData.payload.password,
-        //       returnSecureToken: true,
-        //     }
-        //   )
-        //   .pipe(
-        //     map(resData => handleAuthentication(resData.email)),
-        //     catchError(errorRes => handleError(errorRes))
-        //   );
-        // })
       );
-    }
-    // { dispatch: false }
+    },
+    { dispatch: false }
   );
+
+  authLogin = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuthActions.LOGIN_START),
+      switchMap((authData: AuthActions.LoginStart) => {
+        return this.http.get<User[]>('http://localhost:3000/users').pipe(
+          map(users => {
+            const user = users.find(
+              user => user.email === authData.payload.email && user.password === authData.payload.password
+            );
+            if (user) {
+              localStorage.setItem('userData', JSON.stringify(user));
+              return new AuthActions.LoginSuccess({
+                email: user.email,
+                password: user.password,
+                redirect: true,
+              });
+            } else {
+              return new AuthActions.AuthenticateFail('Email does not registered.');
+            }
+          }),
+          catchError(errorRes => {
+            console.log(errorRes);
+            return of(new AuthActions.AuthenticateFail('An unknown error occurred!'));
+          })
+        );
+      })
+    );
+  });
 
   authRedirect = createEffect(
     () => {
       return this.actions$.pipe(
-        ofType(AuthActions.AUTHENTICATE_SUCCESS),
-        tap((authSuccsessAction: AuthActions.AuthenticateSuccess) => {
-          if (authSuccsessAction.payload.redirect) this.router.navigate(['/blogs']);
+        ofType(AuthActions.LOGIN_SUCCESS),
+        tap((loginSuccsessAction: AuthActions.LoginSuccess) => {
+          if (loginSuccsessAction.payload.redirect) this.router.navigate(['/blogs']);
         })
       );
     },
@@ -131,14 +105,12 @@ export class AuthEffects {
           email: string;
           password: string;
         } = userDataString ? JSON.parse(userDataString) : null;
-        console.log(userData);
         if (!userData) {
           return { type: 'DUMMY' };
         }
 
         if (userData) {
-          // const expirationDuration = new Date(userData._tokenExpirationDate).getTime() - new Date().getTime();
-          return new AuthActions.AuthenticateSuccess({
+          return new AuthActions.LoginSuccess({
             email: userData.email,
             password: userData.password,
             redirect: false,

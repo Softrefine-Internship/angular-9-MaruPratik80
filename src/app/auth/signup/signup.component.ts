@@ -1,5 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
+import { Store } from '@ngrx/store';
+import * as fromApp from '../../store/app.reducer';
+import * as AuthActions from '../store/auth.actions';
+import { first } from 'rxjs';
 
 @Component({
   selector: 'app-signup',
@@ -12,6 +16,8 @@ export class SignupComponent implements OnInit {
 
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
+
+  constructor(private store: Store<fromApp.AppState>) {}
 
   togglePassword() {
     this.showPassword = !this.showPassword;
@@ -38,6 +44,17 @@ export class SignupComponent implements OnInit {
 
   onSubmit() {
     this.submitted = true;
+    if (!this.signupForm.valid) return;
+
+    this.store.dispatch(
+      new AuthActions.SignupStart({
+        firstName: this.signupForm.value.firstName,
+        lastName: this.signupForm.value.lastName,
+        email: this.signupForm.value.email,
+        password: this.signupForm.value.password,
+      })
+    );
+
     // https://user-a8256-default-rtdb.asia-southeast1.firebasedatabase.app/
   }
 }
