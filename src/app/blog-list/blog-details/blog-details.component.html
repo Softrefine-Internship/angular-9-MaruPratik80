@@ -1,5 +1,9 @@
-<div class="container mt-5" *ngIf="blog">
+<div class="container mt-3" *ngIf="blog">
   <div class="row">
+    <div class="col-12 mb-3">
+      <a routerLink="/blogs" class="btn btn-primary">&larr; Back</a>
+    </div>
+
     <div class="col-12 text-center mb-4">
       <img [src]="blog.photo_url" class="img-fluid rounded blog-image" alt="Blog Post Image" />
     </div>
@@ -20,12 +24,8 @@
       </ul>
     </div>
 
-    <div class="col-12 mt-4">
+    <div class="col-12 mt-4 mb-5">
       <div [innerHTML]="blog.content_html" class="content-html"></div>
-    </div>
-
-    <div class="col-12 text-center mt-5 mb-5">
-      <a routerLink="/blogs" class="btn btn-primary">Back to Blogs</a>
     </div>
   </div>
 </div>

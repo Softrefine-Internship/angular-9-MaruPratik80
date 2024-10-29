@@ -21,9 +21,7 @@
         <div class="card-footer text-muted">Posted on: {{ blog.created_at | date : 'longDate' }}</div>
       </div>
     </div>
-    <div #loadingSpinner>
-      <app-loading-spinner></app-loading-spinner>
-    </div>
+    <app-loading-spinner></app-loading-spinner>
   </div>
   <!-- <button class="btn btn-primary mb-5" (click)="onScroll()">Load More</button> -->
 

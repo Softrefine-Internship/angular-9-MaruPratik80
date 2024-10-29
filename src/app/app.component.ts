@@ -12,6 +12,7 @@ import * as AuthActions from './auth/store/auth.actions';
 })
 export class AppComponent implements OnInit {
   title = 'angular-9';
+  isCollapsed = true;
   isAuthenticated!: boolean;
   private userSub!: Subscription;
 

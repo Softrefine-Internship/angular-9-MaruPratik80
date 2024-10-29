@@ -81,7 +81,7 @@
                   >Invalid email</small
                 >
                 <small *ngIf="signupForm.controls['email'].errors['emailTaken']" class="text-danger"
-                  >Email is already taken</small
+                  >Email is already registered</small
                 >
               </div>
             </div>
@@ -141,18 +141,27 @@
                 "
                 class="mt-0"
               >
-                <small *ngIf="signupForm.controls['confirmPassword'].errors['required']" class="text-danger"
+                <small
+                  *ngIf="signupForm.controls['confirmPassword'].errors['required']; else mustMatch"
+                  class="text-danger"
                   >Confirm password is required</small
-                >
-                <small *ngIf="signupForm.hasError('mustMatch')" class="text-danger"
-                  >Passwords must match</small
-                >
+                ><ng-template #mustMatch>
+                  <small
+                    *ngIf="signupForm.controls['confirmPassword'].errors['mustMatch']"
+                    class="text-danger"
+                    >Password and Confirm Password must be same</small
+                  >
+                </ng-template>
               </div>
             </div>
 
             <button type="submit" class="btn btn-primary btn-block mt-4">Sign Up</button>
           </form>
 
+          <!--    <div class="alert alert-danger mt-2" *ngIf="error">
+            <p>{{ error }}</p>
+          </div>
+ -->
           <div class="mt-3 text-center">
             <a routerLink="/login">Already have an account? Login</a>
           </div>

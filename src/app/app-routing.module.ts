@@ -9,16 +9,13 @@ const routes: Routes = [
   { path: 'logout', redirectTo: '/login' },
   {
     path: 'blogs',
-    loadChildren: () =>
-      import('./blog-list/blog.module').then((m) => m.BlogModule),
+    loadChildren: () => import('./blog-list/blog.module').then(m => m.BlogModule),
   },
-  { path: '', redirectTo: '/login', pathMatch: 'full' },
+  { path: '', redirectTo: '/blogs', pathMatch: 'full' },
 ];
 
 @NgModule({
-  imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules }),
-  ],
+  imports: [RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })],
   exports: [RouterModule],
 })
 export class AppRoutingModule {}

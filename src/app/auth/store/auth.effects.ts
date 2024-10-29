@@ -1,54 +1,45 @@
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { Actions, createEffect, ofType } from '@ngrx/effects';
-import { catchError, find, map, switchMap, tap } from 'rxjs/operators';
+import { catchError, map, switchMap, tap } from 'rxjs/operators';
 import { of } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 
 import * as AuthActions from './auth.actions';
 import { User } from '../user.model';
 
-const handleError = (errorRes: any) => {
-  let errorMessage = 'An unknown error occurred!';
-  if (!errorRes.error || !errorRes.error.error) {
-    return of(new AuthActions.AuthenticateFail(errorMessage));
-  }
-  switch (errorRes.error.error.message) {
-    case 'EMAIL_EXISTS':
-      errorMessage = 'This email exists already';
-      break;
-    case 'EMAIL_NOT_FOUND':
-      errorMessage = 'This email does not exist.';
-      break;
-    case 'INVALID_PASSWORD':
-      errorMessage = 'This password is not correct.';
-      break;
-  }
-  return of(new AuthActions.AuthenticateFail(errorMessage));
-};
-
 @Injectable()
 export class AuthEffects {
-  authSignup = createEffect(
+  authSignup = createEffect(() => {
+    return this.actions$.pipe(
+      ofType(AuthActions.SIGNUP_START),
+      switchMap((signupAction: AuthActions.SignupStart) => {
+        return this.http
+          .post<User>('http://localhost:3000/users', {
+            firstName: signupAction.payload.firstName,
+            lastName: signupAction.payload.lastName,
+            email: signupAction.payload.email,
+            password: signupAction.payload.password,
+          })
+          .pipe(
+            map(() => {
+              return new AuthActions.SignupSuccess();
+            }),
+            catchError(errorRes => {
+              console.log(errorRes);
+              return of(new AuthActions.LoginFail('An unknown error occurred!'));
+            })
+          );
+      })
+    );
+  });
+
+  authRedirectFromSignup = createEffect(
     () => {
       return this.actions$.pipe(
-        ofType(AuthActions.SIGNUP_START),
-        switchMap((signupAction: AuthActions.SignupStart) => {
-          return this.http.get<User[]>('http://localhost:3000/users');
-          return this.http
-            .post<User>('http://localhost:3000/users', {
-              firstName: signupAction.payload.firstName,
-              lastName: signupAction.payload.lastName,
-              email: signupAction.payload.email,
-              password: signupAction.payload.password,
-            })
-            .pipe(
-              tap(resData => {
-                console.log(resData);
-                // return handleAuthentication(signupAction.payload.email, signupAction.payload.password);
-              })
-              // catchError(errorRes => handleError(errorRes))
-            );
+        ofType(AuthActions.SIGNUP_SUCCESS),
+        tap(() => {
+          this.router.navigate(['/login']);
         })
       );
     },
@@ -61,23 +52,24 @@ export class AuthEffects {
       switchMap((authData: AuthActions.LoginStart) => {
         return this.http.get<User[]>('http://localhost:3000/users').pipe(
           map(users => {
-            const user = users.find(
-              user => user.email === authData.payload.email && user.password === authData.payload.password
-            );
-            if (user) {
-              localStorage.setItem('userData', JSON.stringify(user));
+            const user = users.find(user => authData.payload.email === user.email);
+            if (!user) {
+              return new AuthActions.LoginFail('Email does Not Exist!');
+            }
+            if (authData.payload.password === user.password) {
+              localStorage.setItem('userData', JSON.stringify({ email: user.email, userId: user.id }));
               return new AuthActions.LoginSuccess({
                 email: user.email,
-                password: user.password,
+                userId: user.id,
                 redirect: true,
               });
             } else {
-              return new AuthActions.AuthenticateFail('Email does not registered.');
+              return new AuthActions.LoginFail('Wrong Password!');
             }
           }),
           catchError(errorRes => {
             console.log(errorRes);
-            return of(new AuthActions.AuthenticateFail('An unknown error occurred!'));
+            return of(new AuthActions.LoginFail('An unknown error occurred!'));
           })
         );
       })
@@ -103,20 +95,15 @@ export class AuthEffects {
         const userDataString = localStorage.getItem('userData');
         const userData: {
           email: string;
-          password: string;
+          userId: string;
         } = userDataString ? JSON.parse(userDataString) : null;
-        if (!userData) {
-          return { type: 'DUMMY' };
-        }
+        if (!userData) return { type: 'DUMMY' };
 
-        if (userData) {
-          return new AuthActions.LoginSuccess({
-            email: userData.email,
-            password: userData.password,
-            redirect: false,
-          });
-        }
-        return { type: 'DUMMY' };
+        return new AuthActions.LoginSuccess({
+          email: userData.email,
+          userId: userData.userId,
+          redirect: false,
+        });
       })
     );
   });

@@ -1,52 +1,61 @@
 import * as AuthActions from './auth.actions';
 
 export interface State {
-  user: any | null;
+  user: { email: string; userId: string } | null;
   authError: string | null;
+  message: string | null;
   loading: boolean;
 }
 
 const initialState: State = {
   user: null,
   authError: null,
+  message: null,
   loading: false,
 };
 
 export function authReducer(state: State = initialState, action: AuthActions.AuthActions) {
   switch (action.type) {
     case AuthActions.LOGIN_START:
-    case AuthActions.SIGNUP_START:
       return {
         ...state,
-        user: (action as AuthActions.LoginStart).payload,
+        // user: (action as AuthActions.LoginStart).payload,
         authError: null,
         loading: true,
       };
     case AuthActions.LOGIN_SUCCESS:
       const act = action as AuthActions.LoginSuccess;
-      const user = { email: act.payload.email, password: act.payload.password };
+      const user = { email: act.payload.email, userId: act.payload.userId };
       return {
         ...state,
         authError: null,
         user,
         loading: false,
       };
-    case AuthActions.AUTHENTICATE_FAIL:
+    case AuthActions.SIGNUP_START:
+      return {
+        ...state,
+        authError: null,
+        loading: true,
+      };
+    case AuthActions.SIGNUP_SUCCESS:
+      return {
+        ...state,
+        authError: null,
+        message: 'Signup Successfull',
+        loading: false,
+      };
+    case AuthActions.LOGIN_FAIL:
       return {
         ...state,
         user: null,
-        authError: (<AuthActions.AuthenticateFail>action).payload,
+        authError: (<AuthActions.LoginFail>action).payload,
         loading: false,
       };
     case AuthActions.LOGOUT:
       return {
         ...state,
         user: null,
-      };
-    case AuthActions.CLEAR_ERROR:
-      return {
-        ...state,
-        authError: null,
       };
     default:
       return state;

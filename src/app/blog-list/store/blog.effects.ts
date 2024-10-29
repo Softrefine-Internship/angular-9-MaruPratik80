@@ -20,13 +20,6 @@ export class BlogEffects {
         );
       }),
       map(response => response?.['blogs']),
-      map(blogs => {
-        return blogs.map(blog => {
-          return {
-            ...blog,
-          };
-        });
-      }),
       map(blogs => new BlogActions.SetBlogs(blogs))
     );
   });

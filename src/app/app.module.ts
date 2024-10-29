@@ -7,6 +7,8 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 import { StoreRouterConnectingModule } from '@ngrx/router-store';
 import { EffectsModule } from '@ngrx/effects';
 import { AppRoutingModule } from './app-routing.module';
+import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
+import { CollapseModule } from 'ngx-bootstrap/collapse';
 
 import { AppComponent } from './app.component';
 import { LoginComponent } from './auth/login/login.component';
@@ -39,6 +41,8 @@ import { ScrollNearEndDirective } from './scroll-near-end.directive';
     EffectsModule.forRoot([AuthEffects, BlogEffects]),
     StoreDevtoolsModule.instrument({ logOnly: environment.production }),
     // StoreRouterConnectingModule.forRoot(),
+    BrowserAnimationsModule,
+    CollapseModule.forRoot(),
   ],
   providers: [],
   bootstrap: [AppComponent],
