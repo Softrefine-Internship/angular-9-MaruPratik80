@@ -1,7 +1,7 @@
 <div class="container mt-5">
   <h2 class="text-center mb-4">Blog Posts</h2>
 
-  <div class="row" appScrollNearEnd (nearEnd)="onScroll()">
+  <div class="row">
     <div class="col-sm-12 col-md-6 col-lg-4 mb-4" *ngFor="let blog of blogs">
       <div class="card h-100">
         <img
@@ -21,11 +21,10 @@
         <div class="card-footer text-muted">Posted on: {{ blog.created_at | date : 'longDate' }}</div>
       </div>
     </div>
-    <app-loading-spinner></app-loading-spinner>
+    <app-loading-spinner appObserver (visible)="onScroll()" *ngIf="blogs.length < 1000"></app-loading-spinner>
   </div>
-  <!-- <button class="btn btn-primary mb-5" (click)="onScroll()">Load More</button> -->
 
-  <div *ngIf="blogs.length === 0" class="text-center mt-5">
+  <!--  <div *ngIf="blogs.length === 0" class="text-center mt-5">
     <p>No blog posts available.</p>
-  </div>
+  </div> -->
 </div>

@@ -12,3 +12,13 @@
   display: grid;
   place-items: center;
 }
+
+input {
+  &.ng-valid {
+    border-color: #009600;
+  }
+  &.ng-invalid.ng-touched {
+    border-color: red;
+    box-shadow: 0 0 0 0.25rem rgba(red, 0.25);
+  }
+}

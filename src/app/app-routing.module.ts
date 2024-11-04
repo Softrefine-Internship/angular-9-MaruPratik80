@@ -6,7 +6,6 @@ import { SignupComponent } from './auth/signup/signup.component';
 const routes: Routes = [
   { path: 'login', component: LoginComponent },
   { path: 'signup', component: SignupComponent },
-  { path: 'logout', redirectTo: '/login' },
   {
     path: 'blogs',
     loadChildren: () => import('./blog-list/blog.module').then(m => m.BlogModule),

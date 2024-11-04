@@ -158,10 +158,15 @@
             <button type="submit" class="btn btn-primary btn-block mt-4">Sign Up</button>
           </form>
 
-          <!--    <div class="alert alert-danger mt-2" *ngIf="error">
-            <p>{{ error }}</p>
+          <div
+            class="alert mt-2"
+            *ngIf="message || error"
+            [ngClass]="{ 'alert-success': message, 'alert-danger': error }"
+          >
+            <p *ngIf="error">{{ error }}</p>
+            <p *ngIf="message">{{ message }}</p>
           </div>
- -->
+
           <div class="mt-3 text-center">
             <a routerLink="/login">Already have an account? Login</a>
           </div>
@@ -169,4 +174,8 @@
       </div>
     </div>
   </div>
+</div>
+
+<div class="loading-spinner" *ngIf="isLoading">
+  <app-loading-spinner></app-loading-spinner>
 </div>

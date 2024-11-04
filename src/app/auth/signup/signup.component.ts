@@ -1,11 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { AbstractControl, FormControl, FormGroup, ValidationErrors, Validators } from '@angular/forms';
 import { HttpClient } from '@angular/common/http';
 import { Store } from '@ngrx/store';
 import * as fromApp from '../../store/app.reducer';
 import * as AuthActions from '../store/auth.actions';
 import { catchError, map } from 'rxjs/operators';
-import { Observable, of } from 'rxjs';
+import { Observable, of, Subscription } from 'rxjs';
 import { User } from '../user.model';
 
 @Component({
@@ -13,12 +13,17 @@ import { User } from '../user.model';
   templateUrl: './signup.component.html',
   styleUrls: ['./signup.component.scss'],
 })
-export class SignupComponent implements OnInit {
+export class SignupComponent implements OnInit, OnDestroy {
   signupForm!: FormGroup;
   submitted = false;
-
   showPassword: boolean = false;
   showConfirmPassword: boolean = false;
+
+  isLoading = false;
+  error: string | null = null;
+  message: string | null = null;
+
+  private storeSub!: Subscription;
 
   constructor(private store: Store<fromApp.AppState>, private http: HttpClient) {}
 
@@ -37,6 +42,12 @@ export class SignupComponent implements OnInit {
       email: new FormControl('', [Validators.required, Validators.email], this.emailTaken.bind(this)),
       password: new FormControl('', [Validators.required, Validators.minLength(8)]),
       confirmPassword: new FormControl('', [Validators.required, this.mustMatch.bind(this)]),
+    });
+
+    this.storeSub = this.store.select('auth').subscribe(authState => {
+      this.isLoading = authState.loading;
+      this.error = authState.authError;
+      this.message = authState.message;
     });
   }
 
@@ -67,5 +78,9 @@ export class SignupComponent implements OnInit {
     );
 
     // https://user-a8256-default-rtdb.asia-southeast1.firebasedatabase.app/
+  }
+
+  ngOnDestroy(): void {
+    if (this.storeSub) this.storeSub.unsubscribe();
   }
 }

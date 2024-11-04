@@ -27,7 +27,7 @@ export class AuthEffects {
             }),
             catchError(errorRes => {
               console.log(errorRes);
-              return of(new AuthActions.LoginFail('An unknown error occurred!'));
+              return of(new AuthActions.SignupFail('An unknown error occurred!'));
             })
           );
       })
@@ -39,7 +39,9 @@ export class AuthEffects {
       return this.actions$.pipe(
         ofType(AuthActions.SIGNUP_SUCCESS),
         tap(() => {
-          this.router.navigate(['/login']);
+          setTimeout(() => {
+            this.router.navigate(['/login']);
+          }, 1000);
         })
       );
     },

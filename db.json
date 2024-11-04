@@ -8,18 +8,18 @@
       "password": "John@1234"
     },
     {
-      "id": "7180",
-      "firstName": "Pratik",
-      "lastName": "Maru",
-      "email": "test@test.com",
-      "password": "12345678"
-    },
-    {
       "id": "180c",
       "firstName": "test",
       "lastName": "test",
       "email": "test@gmail.com",
       "password": "test1234"
+    },
+    {
+      "id": "cda7",
+      "firstName": "Pratik",
+      "lastName": "Maru",
+      "email": "test@test.com",
+      "password": "12345678"
     }
   ]
 }

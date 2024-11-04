@@ -26,13 +26,13 @@
           <a class="nav-link" routerLink="/signup" routerLinkActive="active">Sign Up</a>
         </li>
         <li class="nav-item" *ngIf="isAuthenticated">
-          <a class="nav-link" routerLink="/logout" routerLinkActive="active" (click)="logout()">Logout</a>
+          <button class="nav-link" (click)="logout()">Logout</button>
         </li>
       </ul>
     </div>
   </div>
 </nav>
 
-<div class="container mt-5 mt-md-3">
+<div class="container mt-md-3">
   <router-outlet></router-outlet>
 </div>

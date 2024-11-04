@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormControl, FormGroup, Validators } from '@angular/forms';
 import { Store } from '@ngrx/store';
 import * as fromApp from '../../store/app.reducer';
@@ -10,7 +10,7 @@ import { Subscription } from 'rxjs';
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.scss'],
 })
-export class LoginComponent implements OnInit {
+export class LoginComponent implements OnInit, OnDestroy {
   loginForm!: FormGroup;
   submitted = false;
   showPassword = false;
@@ -46,5 +46,9 @@ export class LoginComponent implements OnInit {
     const password = this.loginForm.value['password'];
 
     this.store.dispatch(new AuthActions.LoginStart({ email, password }));
+  }
+
+  ngOnDestroy(): void {
+    if (this.storeSub) this.storeSub.unsubscribe();
   }
 }

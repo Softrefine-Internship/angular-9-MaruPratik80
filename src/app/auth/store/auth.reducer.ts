@@ -19,9 +19,9 @@ export function authReducer(state: State = initialState, action: AuthActions.Aut
     case AuthActions.LOGIN_START:
       return {
         ...state,
-        // user: (action as AuthActions.LoginStart).payload,
         authError: null,
         loading: true,
+        message: null,
       };
     case AuthActions.LOGIN_SUCCESS:
       const act = action as AuthActions.LoginSuccess;
@@ -30,6 +30,13 @@ export function authReducer(state: State = initialState, action: AuthActions.Aut
         ...state,
         authError: null,
         user,
+        loading: false,
+      };
+    case AuthActions.LOGIN_FAIL:
+      return {
+        ...state,
+        user: null,
+        authError: (action as AuthActions.LoginFail).payload,
         loading: false,
       };
     case AuthActions.SIGNUP_START:
@@ -45,11 +52,10 @@ export function authReducer(state: State = initialState, action: AuthActions.Aut
         message: 'Signup Successfull',
         loading: false,
       };
-    case AuthActions.LOGIN_FAIL:
+    case AuthActions.SIGNUP_FAIL:
       return {
         ...state,
-        user: null,
-        authError: (<AuthActions.LoginFail>action).payload,
+        authError: (action as AuthActions.SignupFail).payload,
         loading: false,
       };
     case AuthActions.LOGOUT:
